@@ -34,4 +34,4 @@ VDO.Ninjaのフレーム取得は埋め込みAPIを利用します。ネット�
 
 ## GitHub Pages
 
-`main` ブランチへ更新を送ると、GitHub ActionsがサイトをビルドしてGitHub Pagesへ公開します。リポジトリの **Settings → Pages → Source** は **GitHub Actions** を選択します。
+公開用ビルドは `gh-pages` ブランチへ置き、リポジトリの **Settings → Pages** から公開します。ソースコードは `main` ブランチに保存されています。
