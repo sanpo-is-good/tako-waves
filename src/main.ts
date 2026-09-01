@@ -3,30 +3,54 @@ import "./style.css";
 type Family = "drum" | "bass" | "chord" | "lead";
 type Point = { x: number; y: number };
 type Pad = { name: string; family: Family; color: string; key: string; freq: number };
+type PhraseNote = { step: number; semi?: number; velocity: number; duration?: number; drum?: number };
 type Ripple = { pad: number; family: Family; color: string; x: number; y: number; born: number; power: number; seed: number };
 type LoopEvent = { step: number; pad: number; velocity: number };
 
 const pads: Pad[] = [
-  { name: "KICK", family: "drum", color: "#ff5c35", key: "1", freq: 48 },
-  { name: "SNARE", family: "drum", color: "#ff7a45", key: "2", freq: 178 },
-  { name: "HAT", family: "drum", color: "#ff9c5a", key: "3", freq: 720 },
-  { name: "CLAP", family: "drum", color: "#ffbd68", key: "4", freq: 260 },
-  { name: "BELL", family: "drum", color: "#ffd66f", key: "5", freq: 880 },
-  { name: "BASS C", family: "bass", color: "#75e8c2", key: "q", freq: 65.41 },
-  { name: "BASS D", family: "bass", color: "#51dfbf", key: "w", freq: 73.42 },
-  { name: "BASS E", family: "bass", color: "#35d6ba", key: "e", freq: 82.41 },
-  { name: "BASS G", family: "bass", color: "#20cbb5", key: "r", freq: 98 },
-  { name: "BASS A", family: "bass", color: "#10bdad", key: "t", freq: 110 },
-  { name: "CHORD C", family: "chord", color: "#6fb8ff", key: "a", freq: 130.81 },
-  { name: "CHORD Dm", family: "chord", color: "#809fff", key: "s", freq: 146.83 },
-  { name: "CHORD Em", family: "chord", color: "#9489ff", key: "d", freq: 164.81 },
-  { name: "CHORD F", family: "chord", color: "#aa76ff", key: "f", freq: 174.61 },
-  { name: "CHORD G", family: "chord", color: "#bd68ef", key: "g", freq: 196 },
-  { name: "LEAD C", family: "lead", color: "#ff70b7", key: "z", freq: 523.25 },
-  { name: "LEAD D", family: "lead", color: "#f45ec1", key: "x", freq: 587.33 },
-  { name: "LEAD E", family: "lead", color: "#e74dcc", key: "c", freq: 659.25 },
-  { name: "LEAD G", family: "lead", color: "#d83bd8", key: "v", freq: 783.99 },
-  { name: "LEAD A", family: "lead", color: "#c52de5", key: "b", freq: 880 },
+  { name: "KICK RUN", family: "drum", color: "#ff5c35", key: "1", freq: 48 },
+  { name: "SNARE DRAG", family: "drum", color: "#ff7a45", key: "2", freq: 178 },
+  { name: "HAT SKIP", family: "drum", color: "#ff9c5a", key: "3", freq: 720 },
+  { name: "CLAP TURN", family: "drum", color: "#ffbd68", key: "4", freq: 260 },
+  { name: "BELL POLY", family: "drum", color: "#ffd66f", key: "5", freq: 880 },
+  { name: "BASS WALK", family: "bass", color: "#75e8c2", key: "q", freq: 65.41 },
+  { name: "BASS BOUNCE", family: "bass", color: "#51dfbf", key: "w", freq: 73.42 },
+  { name: "BASS CLIMB", family: "bass", color: "#35d6ba", key: "e", freq: 82.41 },
+  { name: "BASS SYNC", family: "bass", color: "#20cbb5", key: "r", freq: 98 },
+  { name: "BASS DROP", family: "bass", color: "#10bdad", key: "t", freq: 110 },
+  { name: "CHORD PULSE", family: "chord", color: "#6fb8ff", key: "a", freq: 130.81 },
+  { name: "CHORD GLASS", family: "chord", color: "#809fff", key: "s", freq: 146.83 },
+  { name: "CHORD RISE", family: "chord", color: "#9489ff", key: "d", freq: 164.81 },
+  { name: "CHORD FALL", family: "chord", color: "#aa76ff", key: "f", freq: 174.61 },
+  { name: "CHORD WAVE", family: "chord", color: "#bd68ef", key: "g", freq: 196 },
+  { name: "LEAD CALL", family: "lead", color: "#ff70b7", key: "z", freq: 523.25 },
+  { name: "LEAD ANSWER", family: "lead", color: "#f45ec1", key: "x", freq: 587.33 },
+  { name: "LEAD SPARK", family: "lead", color: "#e74dcc", key: "c", freq: 659.25 },
+  { name: "LEAD ORBIT", family: "lead", color: "#d83bd8", key: "v", freq: 783.99 },
+  { name: "LEAD CASCADE", family: "lead", color: "#c52de5", key: "b", freq: 880 },
+];
+
+const phrases: PhraseNote[][] = [
+  [{ step: 0, drum: 0, velocity: 1 }, { step: 2, drum: 0, velocity: .68 }, { step: 3, drum: 2, velocity: .42 }, { step: 5, drum: 0, velocity: .82 }, { step: 7, drum: 1, velocity: .58 }],
+  [{ step: 0, drum: 1, velocity: 1 }, { step: 1.5, drum: 1, velocity: .35 }, { step: 2, drum: 2, velocity: .45 }, { step: 3, drum: 1, velocity: .62 }, { step: 3.5, drum: 1, velocity: .4 }],
+  [0, 1, 2.5, 3, 4.5, 5, 6, 7.5].map((step, i) => ({ step, drum: 2, velocity: i % 3 === 0 ? .92 : .46 })),
+  [{ step: 0, drum: 3, velocity: 1 }, { step: 2, drum: 2, velocity: .38 }, { step: 3, drum: 3, velocity: .55 }, { step: 5.5, drum: 3, velocity: .72 }, { step: 7, drum: 1, velocity: .46 }],
+  [{ step: 0, drum: 4, semi: 0, velocity: .85 }, { step: 3, drum: 4, semi: 7, velocity: .55 }, { step: 5, drum: 4, semi: 12, velocity: .7 }, { step: 7, drum: 4, semi: 3, velocity: .48 }],
+  [{ step: 0, semi: 0, velocity: 1 }, { step: 2, semi: 0, velocity: .7 }, { step: 3, semi: 3, velocity: .82 }, { step: 5, semi: 5, velocity: .66 }, { step: 7, semi: 7, velocity: .88 }],
+  [{ step: 0, semi: 0, velocity: .9 }, { step: 1.5, semi: 7, velocity: .58 }, { step: 3, semi: 5, velocity: .8 }, { step: 4, semi: 0, velocity: .65 }, { step: 6.5, semi: 10, velocity: .8 }],
+  [{ step: 0, semi: 0, velocity: .82 }, { step: 1, semi: 2, velocity: .58 }, { step: 2, semi: 3, velocity: .7 }, { step: 3, semi: 5, velocity: .78 }, { step: 4, semi: 7, velocity: .92 }, { step: 6, semi: 12, velocity: .64 }],
+  [{ step: 0, semi: 0, velocity: .94 }, { step: 2.5, semi: 7, velocity: .64 }, { step: 4, semi: 0, velocity: .76 }, { step: 5.5, semi: 10, velocity: .68 }, { step: 7, semi: 5, velocity: .82 }],
+  [{ step: 0, semi: 12, velocity: .92 }, { step: 1, semi: 7, velocity: .6 }, { step: 3, semi: 3, velocity: .75 }, { step: 4.5, semi: 0, velocity: .86 }, { step: 7, semi: -5, velocity: .68 }],
+  [{ step: 0, semi: 0, velocity: .85, duration: 2 }, { step: 4, semi: 7, velocity: .64, duration: 2 }, { step: 7, semi: 12, velocity: .5, duration: 1 }],
+  [{ step: 0, semi: 0, velocity: .78, duration: 1.5 }, { step: 2, semi: 3, velocity: .52 }, { step: 4, semi: 7, velocity: .65, duration: 1.5 }, { step: 6, semi: 10, velocity: .5 }],
+  [{ step: 0, semi: 0, velocity: .68 }, { step: 1, semi: 3, velocity: .56 }, { step: 2, semi: 7, velocity: .62 }, { step: 3, semi: 12, velocity: .76 }, { step: 5, semi: 15, velocity: .5 }, { step: 7, semi: 19, velocity: .58 }],
+  [{ step: 0, semi: 12, velocity: .72 }, { step: 1, semi: 7, velocity: .58 }, { step: 2, semi: 3, velocity: .64 }, { step: 3, semi: 0, velocity: .8 }, { step: 5, semi: -5, velocity: .55 }, { step: 7, semi: -12, velocity: .48 }],
+  [{ step: 0, semi: 0, velocity: .78, duration: 3 }, { step: 3, semi: 5, velocity: .54, duration: 2 }, { step: 6, semi: 7, velocity: .68, duration: 2 }],
+  [{ step: 0, semi: 0, velocity: .9 }, { step: 1.5, semi: 3, velocity: .6 }, { step: 3, semi: 7, velocity: .78 }, { step: 5, semi: 10, velocity: .55 }, { step: 7, semi: 7, velocity: .66 }],
+  [{ step: 0, semi: 12, velocity: .72 }, { step: 2, semi: 7, velocity: .62 }, { step: 3.5, semi: 5, velocity: .55 }, { step: 5, semi: 3, velocity: .75 }, { step: 7, semi: 0, velocity: .86 }],
+  [{ step: 0, semi: 0, velocity: .82 }, { step: .5, semi: 7, velocity: .44 }, { step: 2, semi: 12, velocity: .72 }, { step: 3, semi: 15, velocity: .48 }, { step: 4.5, semi: 19, velocity: .65 }, { step: 7, semi: 12, velocity: .58 }],
+  [{ step: 0, semi: 0, velocity: .78 }, { step: 2, semi: 5, velocity: .55 }, { step: 3, semi: 12, velocity: .82 }, { step: 4, semi: 7, velocity: .62 }, { step: 6, semi: 14, velocity: .72 }, { step: 7.5, semi: 19, velocity: .45 }],
+  [0, 1, 2, 3, 4, 5, 6, 7].map((step, i) => ({ step, semi: [12, 7, 3, 0, 3, 7, 12, 15][i], velocity: .84 - i * .045 })),
 ];
 
 const app = document.querySelector<HTMLElement>("#app")!;
@@ -53,6 +77,7 @@ const state = {
   loopRecording: false,
   loopPlaying: false,
   loopEvents: [] as LoopEvent[],
+  bgmEnabled: true,
   ripples: [] as Ripple[],
   sensitivity: 17,
   zoneRadius: 0.035,
@@ -143,7 +168,7 @@ function playTone(freq: number, type: OscillatorType, at: number, duration: numb
   osc.stop(at + duration + 0.04);
 }
 
-function playDrum(index: number, at: number, velocity: number) {
+function playDrum(index: number, at: number, velocity: number, semi = 0) {
   const audio = state.audio!;
   if (index === 0) {
     const osc = audio.createOscillator();
@@ -166,18 +191,30 @@ function playDrum(index: number, at: number, velocity: number) {
   noise.connect(filter).connect(gain);
   noise.start(at);
   noise.stop(at + 0.28);
-  if (index === 4) playTone(pads[index].freq, "sine", at, 0.44, velocity * 0.25, 6);
+  if (index === 4) playTone(pads[index].freq * 2 ** (semi / 12), "sine", at, 0.44, velocity * 0.25, 6);
 }
 
-function playVoice(index: number, at: number, velocity: number) {
+function playVoice(index: number, at: number, velocity: number, semi = 0, duration = 0) {
   const pad = pads[index];
-  if (pad.family === "drum") playDrum(index, at, velocity);
-  if (pad.family === "bass") playTone(pad.freq, "sawtooth", at, 0.42, 0.22 * velocity, -5);
+  const freq = pad.freq * 2 ** (semi / 12);
+  if (pad.family === "drum") playDrum(index, at, velocity, semi);
+  if (pad.family === "bass") playTone(freq, "sawtooth", at, duration || 0.34, 0.22 * velocity, -5);
   if (pad.family === "chord") {
     const minor = index === 11 || index === 12;
-    [1, minor ? 1.1892 : 1.2599, 1.4983].forEach((ratio, voice) => playTone(pad.freq * ratio, "triangle", at + voice * 0.008, 0.92, 0.09 * velocity, voice * 3));
+    [1, minor ? 1.1892 : 1.2599, 1.4983].forEach((ratio, voice) => playTone(freq * ratio, "triangle", at + voice * 0.008, duration || 0.72, 0.075 * velocity, voice * 3));
   }
-  if (pad.family === "lead") playTone(pad.freq, "sine", at, 0.58, 0.16 * velocity, 3);
+  if (pad.family === "lead") playTone(freq, "sine", at, duration || 0.3, 0.15 * velocity, 3);
+}
+
+function playPhrase(index: number, at: number, velocity: number) {
+  const stepSeconds = 60 / state.bpm / 4;
+  phrases[index].forEach((note, noteIndex) => {
+    const noteAt = at + note.step * stepSeconds;
+    const noteVelocity = velocity * note.velocity;
+    if (pads[index].family === "drum") playDrum(note.drum ?? index, noteAt, noteVelocity, note.semi || 0);
+    else playVoice(index, noteAt, noteVelocity, note.semi || 0, (note.duration || 1.25) * stepSeconds);
+    window.setTimeout(() => addRipple(index, noteIndex ? noteVelocity * .66 : noteVelocity), Math.max(0, (noteAt - state.audio!.currentTime) * 1000));
+  });
 }
 
 function currentStep() {
@@ -192,8 +229,7 @@ function triggerPad(index: number, velocity = 1, fromLoop = false) {
   const rawStep = (state.audio.currentTime - state.transportStart) / stepSeconds;
   const scheduledStep = state.quantize ? Math.ceil(rawStep + 0.035) : rawStep;
   const at = state.transportStart + scheduledStep * stepSeconds;
-  playVoice(index, Math.max(state.audio.currentTime, at), velocity);
-  window.setTimeout(() => addRipple(index, velocity), Math.max(0, (at - state.audio.currentTime) * 1000));
+  playPhrase(index, Math.max(state.audio.currentTime, at), velocity);
   if (state.loopRecording && !fromLoop) {
     state.loopEvents.push({ step: ((Math.round(scheduledStep) % 32) + 32) % 32, pad: index, velocity });
     updateLoopCount();
@@ -212,9 +248,29 @@ function transportTick() {
   const step = currentStep();
   if (step === state.lastStep) return;
   state.lastStep = step;
+  if (state.bgmEnabled) playBackgroundStep(step, state.audio.currentTime + 0.018);
   if (state.loopPlaying && state.loopEvents.length) {
     const loopStep = ((step % 32) + 32) % 32;
     state.loopEvents.filter((event) => event.step === loopStep).forEach((event) => triggerPad(event.pad, event.velocity, true));
+  }
+}
+
+function playBackgroundStep(step: number, at: number) {
+  const beat = ((step % 16) + 16) % 16;
+  const bar = Math.floor(step / 16);
+  const roots = [0, -3, -7, -5];
+  const root = roots[((bar % roots.length) + roots.length) % roots.length];
+  if ([0, 4, 8, 12].includes(beat)) playDrum(0, at, beat === 0 ? .32 : .24);
+  if ([4, 12].includes(beat)) playDrum(1, at, .18);
+  if (beat % 2 === 0) playDrum(2, at, beat % 4 === 2 ? .16 : .09);
+  if ([0, 3, 6, 10, 14].includes(beat)) {
+    const passing = beat === 6 ? 7 : beat === 14 ? 12 : 0;
+    playTone(65.41 * 2 ** ((root + passing) / 12), "sawtooth", at, .18, .045, -8);
+  }
+  if (beat === 0) {
+    const chordRoot = 130.81 * 2 ** (root / 12);
+    const minor = root === -3;
+    [1, minor ? 1.1892 : 1.2599, 1.4983].forEach((ratio, voice) => playTone(chordRoot * ratio, "sine", at + voice * .01, 1.7, .018, voice * 2));
   }
 }
 
@@ -398,6 +454,7 @@ function buildPadGrid() {
   pads.forEach((pad, index) => {
     const button = document.createElement("button"); button.className = `mini-pad ${pad.family}`; button.dataset.pad = String(index); button.style.setProperty("--pad-color", pad.color);
     button.innerHTML = `<span>${String(index + 1).padStart(2, "0")}</span><b>${pad.name}</b><kbd>${pad.key.toUpperCase()}</kbd>`;
+    button.title = `${pad.name} — ${phrases[index].length}音のフレーズ`;
     button.addEventListener("pointerdown", (event) => { event.preventDefault(); triggerPad(index, 1); }); grid.appendChild(button);
   });
 }
@@ -430,6 +487,12 @@ document.querySelector("#recordButton")?.addEventListener("click", (event) => {
 document.querySelector("#clearButton")?.addEventListener("click", () => {
   state.loopEvents = []; state.loopPlaying = false; state.loopRecording = false; document.querySelector("#recordButton")?.classList.remove("is-recording");
   document.querySelector("#recordLabel")!.textContent = "REC 2 BAR"; updateLoopCount();
+});
+document.querySelector("#bgmButton")?.addEventListener("click", (event) => {
+  state.bgmEnabled = !state.bgmEnabled;
+  (event.currentTarget as HTMLElement).classList.toggle("is-on", state.bgmEnabled);
+  document.querySelector("#bgmLabel")!.textContent = state.bgmEnabled ? "BGM ON" : "BGM OFF";
+  setStatus(state.bgmEnabled ? "ベースグルーヴを再開" : "ベースグルーヴを停止");
 });
 document.querySelector("#panelToggle")?.addEventListener("click", () => {
   state.panelHidden = !state.panelHidden; app.classList.toggle("panel-hidden", state.panelHidden);

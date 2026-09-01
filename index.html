@@ -37,19 +37,19 @@
         <div class="quantize-row"><label class="switch"><input id="quantizeToggle" type="checkbox" checked /><i></i><span>16分音符に揃える</span></label><span>QUANTIZE / 1⁄16</span></div>
       </section>
       <section class="instrument-panel" aria-label="20穴パッド">
-        <div class="instrument-head"><div><span>02</span><strong>20 HOLES / 4 VOICES</strong></div><p>画面タップ・キーボードでもテストできます</p></div>
+        <div class="instrument-head"><div><span>02</span><strong>20 HOLES / 20 PHRASES</strong></div><p>1タッチで同期した音楽フレーズを再生</p></div>
         <div id="padGrid" class="pad-grid"></div>
         <div class="family-legend"><span><i class="drum"></i>DRUMS</span><span><i class="bass"></i>BASS</span><span><i class="chord"></i>CHORDS</span><span><i class="lead"></i>LEAD</span></div>
       </section>
       <footer class="loop-bar">
         <div class="loop-title"><span>03</span><strong>LOOP MEMORY</strong><small>2 BAR / 32 STEPS</small></div>
-        <button id="recordButton" class="record-button"><i></i><b id="recordLabel">REC 2 BAR</b></button><button id="clearButton" class="clear-button">CLEAR</button>
+        <button id="bgmButton" class="bgm-button is-on"><i></i><b id="bgmLabel">BGM ON</b></button><button id="recordButton" class="record-button"><i></i><b id="recordLabel">REC 2 BAR</b></button><button id="clearButton" class="clear-button">CLEAR</button>
         <span id="loopCount">0 HIT</span><p>触れた順番を記憶し、その上に演奏を重ねられます</p>
       </footer>
       <div id="systemMessage" class="system-message" role="status"></div>
       <section id="startOverlay" class="start-overlay">
         <div class="start-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><p>TOUCH · SOUND · IMAGE</p>
-        <h1>たこ焼き器が、<br />20音の波になる。</h1><p class="start-copy">串で触れる。音が鳴る。波が広がる。<br />偶然のリズムも、演奏に変わります。</p>
+        <h1>たこ焼き器が、<br />20のフレーズになる。</h1><p class="start-copy">串で触れる。フレーズが走る。波が広がる。<br />すべての音は、ひとつのビートへ同期します。</p>
         <button id="startButton">START PERFORMANCE <span>↗</span></button><small>音を有効にするため、最初に一度タップしてください</small>
       </section>
       <dialog id="connectDialog" class="connect-dialog">

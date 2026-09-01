@@ -47,9 +47,10 @@ button,input { font:inherit; } button { color:inherit; }
 .family-legend .drum{background:#ff7a45}.family-legend .bass{background:#35d6ba}.family-legend .chord{background:#809fff}.family-legend .lead{background:#e74dcc}
 .loop-bar { left:18px; right:18px; bottom:16px; height:60px; display:flex; align-items:center; gap:12px; padding:9px 12px; }
 .loop-title { display:grid; grid-template-columns:20px 1fr; align-items:center; width:175px; } .loop-title small { grid-column:2; font:400 8px "DM Mono",monospace; opacity:.48; }
-.record-button,.clear-button { height:34px; border:1px solid var(--ink); background:transparent; cursor:pointer; font:600 9px "DM Mono",monospace; }
+.record-button,.clear-button,.bgm-button { height:34px; border:1px solid var(--ink); background:transparent; cursor:pointer; font:600 9px "DM Mono",monospace; }
 .record-button { display:flex; align-items:center; gap:8px; min-width:100px; padding:0 12px; } .record-button i { width:8px; height:8px; border-radius:50%; background:var(--orange); }
 .record-button.is-recording { color:white; background:var(--orange); border-color:var(--orange); } .record-button.is-recording i { background:white; animation:pulse .65s steps(2) infinite; }
+.bgm-button { display:flex; align-items:center; gap:7px; min-width:78px; padding:0 10px; } .bgm-button i { width:12px; height:7px; border-left:2px solid var(--ink); border-right:2px solid var(--ink); opacity:.3; } .bgm-button.is-on { color:white; background:var(--ink); } .bgm-button.is-on i { border-color:#75e8c2; opacity:1; animation:pulse .8s steps(2) infinite; }
 .clear-button { padding:0 12px; border-color:var(--line); } #loopCount { font:500 9px "DM Mono",monospace; } .loop-bar p { margin-left:auto; font-size:10px; opacity:.5; }
 .start-overlay { position:fixed; z-index:40; inset:0; display:grid; place-content:center; justify-items:center; text-align:center; color:var(--paper); background:#11110f; transition:opacity .6s,visibility .6s; }
 .start-overlay.is-hidden { opacity:0; visibility:hidden; pointer-events:none; } .start-overlay>p:first-of-type { margin:25px 0 9px; font:500 10px "DM Mono",monospace; letter-spacing:.22em; color:#ff805d; }
