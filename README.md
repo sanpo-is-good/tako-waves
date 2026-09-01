@@ -27,3 +27,11 @@
 - 実演中に照明が変わったら、もう一度「基準を記録」する
 
 VDO.Ninjaのフレーム取得は埋め込みAPIを利用します。ネットワーク状況によって映像入力に遅延が出る場合は、この端末のカメラ入力が最も低遅延です。
+
+## ローカル確認
+
+`npm run dev` を実行し、表示された `http://localhost:5173/` をブラウザで開きます。HTMLファイルを直接開く方法では、音とスクリプトが正しく読み込まれません。
+
+## GitHub Pages
+
+`main` ブランチへ更新を送ると、GitHub ActionsがサイトをビルドしてGitHub Pagesへ公開します。リポジトリの **Settings → Pages → Source** は **GitHub Actions** を選択します。
