@@ -29,6 +29,7 @@ const pads: Pad[] = [
   { name: "LEAD ORBIT", family: "lead", color: "#d83bd8", key: "v", freq: 783.99 },
   { name: "LEAD CASCADE", family: "lead", color: "#c52de5", key: "b", freq: 880 },
 ];
+pads.forEach((pad) => (pad.color = "#f4f4ef"));
 
 const phrases: PhraseNote[][] = [
   [{ step: 0, drum: 0, velocity: 1 }, { step: 2, drum: 0, velocity: .68 }, { step: 3, drum: 2, velocity: .42 }, { step: 5, drum: 0, velocity: .82 }, { step: 7, drum: 1, velocity: .58 }],
@@ -277,58 +278,176 @@ function playBackgroundStep(step: number, at: number) {
 function drawVisuals(now: number) {
   const width = window.innerWidth;
   const height = window.innerHeight;
-  visual.fillStyle = "rgba(246, 242, 232, 0.105)";
+  visual.fillStyle = "rgba(5, 5, 5, 0.16)";
   visual.fillRect(0, 0, width, height);
+
   visual.save();
-  visual.globalAlpha = 0.1;
-  visual.strokeStyle = "#151514";
-  visual.lineWidth = 1;
-  for (let x = 0; x < width; x += Math.max(60, width / 16)) {
-    visual.beginPath(); visual.moveTo(x, 0); visual.lineTo(x, height); visual.stroke();
+  visual.globalAlpha = .055;
+  visual.strokeStyle = "#f4f4ef";
+  visual.lineWidth = .7;
+  for (let row = 0; row < 9; row++) {
+    visual.beginPath();
+    for (let x = 0; x <= width; x += 8) {
+      const y = height * (.18 + row * .08) + Math.sin(x * .012 + now * .0013 + row) * (3 + (state.lastStep % 4) * 1.5);
+      x ? visual.lineTo(x, y) : visual.moveTo(x, y);
+    }
+    visual.stroke();
   }
   visual.restore();
+
   state.ripples = state.ripples.filter((ripple) => now - ripple.born < 1900);
   state.ripples.forEach((ripple) => {
     const age = (now - ripple.born) / 1000;
     const life = Math.max(0, 1 - age / 1.9);
     const x = ripple.x * width;
     const y = ripple.y * height;
+    const pattern = ripple.pad;
+    const scale = Math.min(width, height);
     visual.save();
     visual.translate(x, y);
-    visual.globalAlpha = life;
-    visual.strokeStyle = ripple.color;
-    visual.fillStyle = ripple.color;
+    visual.globalAlpha = Math.min(1, life * 1.2);
+    visual.strokeStyle = "#f4f4ef";
+    visual.fillStyle = "#f4f4ef";
     visual.lineCap = "round";
-    if (ripple.family === "drum") {
-      for (let ring = 0; ring < 4; ring++) {
-        visual.globalAlpha = life * (1 - ring * 0.18);
-        visual.lineWidth = Math.max(1, 9 - age * 5 - ring);
-        visual.beginPath(); visual.arc(0, 0, 24 + age * (170 + ring * 36), 0, Math.PI * 2); visual.stroke();
+
+    if (pattern === 0) {
+      for (let ring = 0; ring < 7; ring++) {
+        visual.globalAlpha = life * (1 - ring * .09); visual.lineWidth = ring ? 1.2 : 6 * life + 1;
+        visual.beginPath(); visual.arc(0, 0, 16 + age * (100 + ring * 22), 0, Math.PI * 2); visual.stroke();
       }
-    } else if (ripple.family === "bass") {
+    } else if (pattern === 1) {
+      visual.lineWidth = 2;
+      for (let arc = 0; arc < 12; arc++) {
+        const radius = 25 + arc * 13 + age * 100;
+        visual.beginPath(); visual.arc(0, 0, radius, arc * .7 + age, arc * .7 + age + Math.PI * .72); visual.stroke();
+      }
+    } else if (pattern === 2) {
+      visual.lineWidth = 1.4;
+      for (let bar = -15; bar <= 15; bar++) {
+        const bx = bar * 13; const bh = (25 + Math.abs(Math.sin(bar * .8 + age * 9)) * 150) * life;
+        visual.beginPath(); visual.moveTo(bx, -bh); visual.lineTo(bx, bh); visual.stroke();
+      }
+    } else if (pattern === 3) {
+      visual.rotate(age * .9); visual.lineWidth = 1.5;
+      for (let box = 0; box < 9; box++) {
+        const size = 18 + box * 22 + age * 95; visual.rotate(.08); visual.strokeRect(-size / 2, -size / 2, size, size);
+      }
+    } else if (pattern === 4) {
+      for (let orbit = 0; orbit < 5; orbit++) {
+        const radius = 35 + orbit * 29 + age * 45; visual.lineWidth = 1; visual.globalAlpha = life * (.95 - orbit * .12);
+        visual.beginPath(); visual.ellipse(0, 0, radius, radius * (.3 + orbit * .09), orbit * .55 + age, 0, Math.PI * 2); visual.stroke();
+        const a = age * (3 + orbit * .7) + orbit; visual.beginPath(); visual.arc(Math.cos(a) * radius, Math.sin(a) * radius * (.3 + orbit * .09), 3 + orbit, 0, Math.PI * 2); visual.fill();
+      }
+    } else if (pattern === 5) {
       visual.lineWidth = 7 * life + 1;
       visual.beginPath();
-      for (let i = 0; i <= 90; i++) {
-        const px = (i / 90 - 0.5) * width * 1.2;
-        const py = Math.sin(i * 0.42 + ripple.seed) * (55 + age * 70) * Math.exp(-Math.abs(i - 45) / 38);
+      for (let i = 0; i <= 120; i++) {
+        const px = (i / 120 - .5) * width * 1.25;
+        const py = Math.sin(i * .36 + ripple.seed) * (45 + age * 82) * Math.exp(-Math.abs(i - 60) / 42);
         i ? visual.lineTo(px, py) : visual.moveTo(px, py);
       }
       visual.stroke();
-    } else if (ripple.family === "chord") {
-      visual.rotate(age * 0.34 + ripple.seed); visual.lineWidth = 4;
-      for (let side = 0; side < 3; side++) { visual.rotate((Math.PI * 2) / 3); visual.strokeRect(-18 - age * 110, -18 - age * 110, 36 + age * 220, 36 + age * 220); }
-    } else {
+    } else if (pattern === 6) {
+      visual.lineJoin = "miter"; visual.lineWidth = 3;
+      for (let line = 0; line < 5; line++) {
+        visual.beginPath();
+        for (let i = 0; i < 28; i++) {
+          const px = (i / 27 - .5) * width; const py = ((i + line) % 2 ? -1 : 1) * (20 + line * 13 + age * 55);
+          i ? visual.lineTo(px, py) : visual.moveTo(px, py);
+        }
+        visual.stroke();
+      }
+    } else if (pattern === 7) {
+      visual.lineWidth = 2;
+      for (let strand = 0; strand < 2; strand++) {
+        visual.beginPath();
+        for (let i = 0; i <= 90; i++) {
+          const px = (i / 90 - .5) * width; const py = Math.sin(i * .28 + age * 5 + strand * Math.PI) * (35 + age * 35);
+          i ? visual.lineTo(px, py) : visual.moveTo(px, py);
+          if (strand === 0 && i % 5 === 0) { visual.moveTo(px, py); visual.lineTo(px, -py); }
+        }
+        visual.stroke();
+      }
+    } else if (pattern === 8) {
+      for (let row = -9; row <= 9; row++) {
+        const w = (60 + Math.abs(Math.sin(row * .7 + age * 5)) * 260) * life; const h = 4 + (row % 3 === 0 ? 7 : 0);
+        visual.fillRect(-w / 2, row * 14, w, h);
+      }
+    } else if (pattern === 9) {
+      visual.lineWidth = 1.2;
+      for (let contour = 0; contour < 13; contour++) {
+        visual.beginPath();
+        for (let i = 0; i <= 70; i++) {
+          const px = (i / 70 - .5) * width; const envelope = Math.exp(-Math.abs(i - 35) / 18);
+          const py = contour * 10 - 60 - Math.sin(i * .28 + contour * .36 + age * 3) * envelope * (45 + age * 90);
+          i ? visual.lineTo(px, py) : visual.moveTo(px, py);
+        }
+        visual.stroke();
+      }
+    } else if (pattern === 10) {
+      visual.lineWidth = 1.5; visual.rotate(age * .45);
+      for (let tri = 0; tri < 9; tri++) {
+        const r = 24 + tri * 18 + age * 60; visual.beginPath();
+        for (let p = 0; p < 4; p++) { const a = -Math.PI / 2 + p * Math.PI * 2 / 3; const px = Math.cos(a) * r; const py = Math.sin(a) * r; p ? visual.lineTo(px, py) : visual.moveTo(px, py); }
+        visual.stroke();
+      }
+    } else if (pattern === 11) {
+      visual.lineWidth = 2;
+      for (let loop = 0; loop < 8; loop++) {
+        visual.beginPath();
+        for (let i = 0; i <= 120; i++) {
+          const a = i / 120 * Math.PI * 2; const px = Math.sin(a * (2 + loop % 3) + age) * (50 + loop * 12); const py = Math.sin(a * 3 + loop + age * 1.7) * (38 + loop * 9);
+          i ? visual.lineTo(px, py) : visual.moveTo(px, py);
+        }
+        visual.stroke();
+      }
+    } else if (pattern === 12) {
+      visual.rotate(Math.PI / 4 + age * .2); visual.lineWidth = 2;
+      for (let box = 0; box < 12; box++) { const size = 15 + box * 18 + age * 75; visual.strokeRect(-size / 2, -size / 2, size, size); }
+    } else if (pattern === 13) {
+      visual.lineWidth = 1.5;
+      for (let beam = 0; beam < 36; beam++) {
+        const a = -Math.PI * .8 + beam / 35 * Math.PI * 1.6; const radius = 70 + age * scale * .55;
+        visual.globalAlpha = life * (.25 + (beam % 4 === 0 ? .7 : .15)); visual.beginPath(); visual.moveTo(0, 0); visual.lineTo(Math.cos(a) * radius, Math.sin(a) * radius); visual.stroke();
+      }
+    } else if (pattern === 14) {
+      visual.lineWidth = 1;
+      for (let staff = -6; staff <= 6; staff++) { visual.beginPath(); visual.moveTo(-width / 2, staff * 14); visual.lineTo(width / 2, staff * 14); visual.stroke(); }
+      for (let dot = 0; dot < 14; dot++) { const px = (dot / 13 - .5) * width; const py = Math.sin(dot * 1.7 + age * 7) * 70; visual.beginPath(); visual.arc(px, py, dot % 4 === 0 ? 7 : 3, 0, Math.PI * 2); visual.fill(); }
+    } else if (pattern === 15) {
       visual.lineWidth = 3; visual.beginPath();
-      for (let i = 0; i < 110; i++) {
-        const angle = i * 0.22 + age * 3.2; const radius = i * 1.8 + age * 45;
-        const px = Math.cos(angle) * radius; const py = Math.sin(angle) * radius;
+      for (let i = 0; i < 170; i++) {
+        const angle = i * .19 + age * 3; const radius = i * 1.25 + age * 45; const px = Math.cos(angle) * radius; const py = Math.sin(angle) * radius;
         i ? visual.lineTo(px, py) : visual.moveTo(px, py);
       }
       visual.stroke();
+    } else if (pattern === 16) {
+      const points: Array<{x:number;y:number}> = [];
+      for (let i = 0; i < 32; i++) {
+        const a = Math.sin(i * 94.31 + ripple.seed) * 999; const px = (a - Math.floor(a) - .5) * scale * .8; const py = (Math.sin(a * 43.2) * .5) * scale * .62;
+        points.push({ x: px * (1 + age * .45), y: py * (1 + age * .45) }); visual.beginPath(); visual.arc(points[i].x, points[i].y, i % 5 === 0 ? 4 : 1.6, 0, Math.PI * 2); visual.fill();
+      }
+      visual.globalAlpha = life * .28;
+      for (let i = 1; i < points.length; i++) { visual.beginPath(); visual.moveTo(points[i - 1].x, points[i - 1].y); visual.lineTo(points[i].x, points[i].y); visual.stroke(); }
+    } else if (pattern === 17) {
+      visual.textAlign = "center"; visual.textBaseline = "middle"; visual.font = `700 ${Math.round(90 + age * 190)}px Space Grotesk`; visual.lineWidth = 2.5;
+      visual.strokeText("18", 0, 0); visual.globalAlpha = life * .22; visual.fillText("18", age * 35, age * -22);
+    } else if (pattern === 18) {
+      visual.lineWidth = 1.4; visual.rotate(age * .55);
+      for (let spoke = 0; spoke < 64; spoke++) {
+        const a = spoke / 64 * Math.PI * 2; const inner = 18 + (spoke % 4) * 7; const outer = 65 + age * 170 + (spoke % 3) * 25;
+        visual.beginPath(); visual.moveTo(Math.cos(a) * inner, Math.sin(a) * inner); visual.lineTo(Math.cos(a) * outer, Math.sin(a) * outer); visual.stroke();
+      }
+    } else {
+      visual.lineWidth = 2;
+      for (let arc = 0; arc < 18; arc++) {
+        const radius = 22 + arc * 15 + age * 55; visual.globalAlpha = life * (1 - arc * .035); visual.beginPath();
+        visual.arc((arc % 2 ? 1 : -1) * age * 45, arc * 7 - 60, radius, Math.PI * .12, Math.PI * .88); visual.stroke();
+      }
     }
     visual.restore();
   });
-  visual.save(); visual.globalAlpha = 0.8; visual.fillStyle = "#151514"; visual.font = "600 11px ui-monospace, monospace";
+  visual.save(); visual.globalAlpha = .72; visual.fillStyle = "#f4f4ef"; visual.font = "600 11px ui-monospace, monospace";
   visual.fillText(state.lastStep < 0 ? "00" : String(state.lastStep % 32).padStart(2, "0"), width - 48, height - 26); visual.restore();
   requestAnimationFrame(drawVisuals);
 }
@@ -506,5 +625,5 @@ document.addEventListener("keydown", (event) => {
 });
 
 resizeCanvases(); buildPadGrid(); window.addEventListener("resize", resizeCanvases); window.setInterval(transportTick, 20);
-visual.fillStyle = "#f6f2e8"; visual.fillRect(0, 0, window.innerWidth, window.innerHeight);
+visual.fillStyle = "#050505"; visual.fillRect(0, 0, window.innerWidth, window.innerHeight);
 requestAnimationFrame(drawVisuals); requestAnimationFrame(drawSource);
