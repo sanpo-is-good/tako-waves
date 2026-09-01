@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f2e8" />
+    <meta name="description" content="20穴のたこ焼き器を、映像認識で音と波に変えるオーディオヴィジュアル楽器。" />
+    <title>TAKO WAVES — 20-hole audiovisual instrument</title>
+  </head>
+  <body>
+    <main id="app">
+      <canvas id="visualCanvas" aria-label="演奏に反応するジェネラティブ映像"></canvas>
+      <header class="topbar">
+        <div class="brand-lockup"><span class="brand-mark">●</span><div><strong>TAKO WAVES</strong><small>20-HOLE AUDIOVISUAL INSTRUMENT</small></div></div>
+        <div class="transport-status">
+          <span><i id="inputDot"></i><b id="inputType">NO INPUT</b></span><span id="audioStatus">AUDIO OFF</span>
+          <button id="fullscreenButton" class="text-button">FULLSCREEN</button><button id="panelToggle" class="text-button">HIDE INPUT</button>
+        </div>
+      </header>
+      <section class="input-panel" aria-label="映像入力と20穴検出">
+        <div class="panel-heading"><div><span>01</span><strong>TAKO INPUT</strong></div><p>串の動きを20の音へ</p></div>
+        <div class="video-shell">
+          <canvas id="sourceCanvas" aria-label="たこ焼き器の映像と検出エリア"></canvas>
+          <iframe id="vdoFrame" title="VDO.Ninja input" allow="autoplay; camera; microphone; fullscreen" referrerpolicy="no-referrer"></iframe>
+          <div class="video-label">LIVE ANALYSIS / 5 × 4</div>
+        </div>
+        <div class="connect-row"><button id="connectButton" class="primary-button">VDO.NINJA 接続</button><button id="cameraButton" class="secondary-button">このカメラ</button></div>
+        <div class="setup-flow">
+          <button id="calibrateButton"><span>1</span><b>四隅を合わせる</b><small>映像内の4穴を指定</small></button>
+          <button id="baselineButton"><span>2</span><b>基準を記録</b><small>誰も触れていない状態</small></button>
+        </div>
+        <div class="control-stack">
+          <label><span>感度 <b id="sensitivityValue">17</b></span><input id="sensitivitySlider" type="range" min="5" max="48" value="17" /></label>
+          <label><span>検出範囲</span><input id="radiusSlider" type="range" min="2" max="7" step="0.2" value="3.5" /></label>
+          <label><span>BPM <b id="bpmValue">108</b></span><input id="bpmSlider" type="range" min="72" max="156" value="108" /></label>
+        </div>
+        <div class="quantize-row"><label class="switch"><input id="quantizeToggle" type="checkbox" checked /><i></i><span>16分音符に揃える</span></label><span>QUANTIZE / 1⁄16</span></div>
+      </section>
+      <section class="instrument-panel" aria-label="20穴パッド">
+        <div class="instrument-head"><div><span>02</span><strong>20 HOLES / 4 VOICES</strong></div><p>画面タップ・キーボードでもテストできます</p></div>
+        <div id="padGrid" class="pad-grid"></div>
+        <div class="family-legend"><span><i class="drum"></i>DRUMS</span><span><i class="bass"></i>BASS</span><span><i class="chord"></i>CHORDS</span><span><i class="lead"></i>LEAD</span></div>
+      </section>
+      <footer class="loop-bar">
+        <div class="loop-title"><span>03</span><strong>LOOP MEMORY</strong><small>2 BAR / 32 STEPS</small></div>
+        <button id="recordButton" class="record-button"><i></i><b id="recordLabel">REC 2 BAR</b></button><button id="clearButton" class="clear-button">CLEAR</button>
+        <span id="loopCount">0 HIT</span><p>触れた順番を記憶し、その上に演奏を重ねられます</p>
+      </footer>
+      <div id="systemMessage" class="system-message" role="status"></div>
+      <section id="startOverlay" class="start-overlay">
+        <div class="start-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><p>TOUCH · SOUND · IMAGE</p>
+        <h1>たこ焼き器が、<br />20音の波になる。</h1><p class="start-copy">串で触れる。音が鳴る。波が広がる。<br />偶然のリズムも、演奏に変わります。</p>
+        <button id="startButton">START PERFORMANCE <span>↗</span></button><small>音を有効にするため、最初に一度タップしてください</small>
+      </section>
+      <dialog id="connectDialog" class="connect-dialog">
+        <button id="closeDialog" class="dialog-close" aria-label="閉じる">×</button><span class="eyebrow">REMOTE VIDEO INPUT</span><h2>VDO.Ninjaを接続</h2>
+        <p>視聴用URL、またはストリームIDを入力してください。映像フレームを受け取り、20穴の接触判定に使います。</p>
+        <label>VIEW URL / STREAM ID<input id="vdoInput" type="text" placeholder="https://vdo.ninja/?view=TAKOWAVES または TAKOWAVES" /></label>
+        <button id="vdoConnectButton" class="primary-button">映像を読み込む</button><ol><li>送信側でたこ焼き器を真上から映す</li><li>接続後「四隅を合わせる」</li><li>静止状態で「基準を記録」</li></ol>
+      </dialog>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
