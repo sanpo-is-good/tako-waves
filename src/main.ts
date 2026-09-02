@@ -32,26 +32,87 @@ const pads: Pad[] = [
 pads.forEach((pad) => (pad.color = "#f4f4ef"));
 
 const phrases: PhraseNote[][] = [
-  [{ step: 0, drum: 0, velocity: 1 }, { step: 2, drum: 0, velocity: .68 }, { step: 3, drum: 2, velocity: .42 }, { step: 5, drum: 0, velocity: .82 }, { step: 7, drum: 1, velocity: .58 }],
-  [{ step: 0, drum: 1, velocity: 1 }, { step: 1.5, drum: 1, velocity: .35 }, { step: 2, drum: 2, velocity: .45 }, { step: 3, drum: 1, velocity: .62 }, { step: 3.5, drum: 1, velocity: .4 }],
-  [0, 1, 2.5, 3, 4.5, 5, 6, 7.5].map((step, i) => ({ step, drum: 2, velocity: i % 3 === 0 ? .92 : .46 })),
-  [{ step: 0, drum: 3, velocity: 1 }, { step: 2, drum: 2, velocity: .38 }, { step: 3, drum: 3, velocity: .55 }, { step: 5.5, drum: 3, velocity: .72 }, { step: 7, drum: 1, velocity: .46 }],
-  [{ step: 0, drum: 4, semi: 0, velocity: .85 }, { step: 3, drum: 4, semi: 7, velocity: .55 }, { step: 5, drum: 4, semi: 12, velocity: .7 }, { step: 7, drum: 4, semi: 3, velocity: .48 }],
-  [{ step: 0, semi: 0, velocity: 1 }, { step: 2, semi: 0, velocity: .7 }, { step: 3, semi: 3, velocity: .82 }, { step: 5, semi: 5, velocity: .66 }, { step: 7, semi: 7, velocity: .88 }],
-  [{ step: 0, semi: 0, velocity: .9 }, { step: 1.5, semi: 7, velocity: .58 }, { step: 3, semi: 5, velocity: .8 }, { step: 4, semi: 0, velocity: .65 }, { step: 6.5, semi: 10, velocity: .8 }],
-  [{ step: 0, semi: 0, velocity: .82 }, { step: 1, semi: 2, velocity: .58 }, { step: 2, semi: 3, velocity: .7 }, { step: 3, semi: 5, velocity: .78 }, { step: 4, semi: 7, velocity: .92 }, { step: 6, semi: 12, velocity: .64 }],
-  [{ step: 0, semi: 0, velocity: .94 }, { step: 2.5, semi: 7, velocity: .64 }, { step: 4, semi: 0, velocity: .76 }, { step: 5.5, semi: 10, velocity: .68 }, { step: 7, semi: 5, velocity: .82 }],
-  [{ step: 0, semi: 12, velocity: .92 }, { step: 1, semi: 7, velocity: .6 }, { step: 3, semi: 3, velocity: .75 }, { step: 4.5, semi: 0, velocity: .86 }, { step: 7, semi: -5, velocity: .68 }],
-  [{ step: 0, semi: 0, velocity: .85, duration: 2 }, { step: 4, semi: 7, velocity: .64, duration: 2 }, { step: 7, semi: 12, velocity: .5, duration: 1 }],
-  [{ step: 0, semi: 0, velocity: .78, duration: 1.5 }, { step: 2, semi: 3, velocity: .52 }, { step: 4, semi: 7, velocity: .65, duration: 1.5 }, { step: 6, semi: 10, velocity: .5 }],
-  [{ step: 0, semi: 0, velocity: .68 }, { step: 1, semi: 3, velocity: .56 }, { step: 2, semi: 7, velocity: .62 }, { step: 3, semi: 12, velocity: .76 }, { step: 5, semi: 15, velocity: .5 }, { step: 7, semi: 19, velocity: .58 }],
-  [{ step: 0, semi: 12, velocity: .72 }, { step: 1, semi: 7, velocity: .58 }, { step: 2, semi: 3, velocity: .64 }, { step: 3, semi: 0, velocity: .8 }, { step: 5, semi: -5, velocity: .55 }, { step: 7, semi: -12, velocity: .48 }],
-  [{ step: 0, semi: 0, velocity: .78, duration: 3 }, { step: 3, semi: 5, velocity: .54, duration: 2 }, { step: 6, semi: 7, velocity: .68, duration: 2 }],
-  [{ step: 0, semi: 0, velocity: .9 }, { step: 1.5, semi: 3, velocity: .6 }, { step: 3, semi: 7, velocity: .78 }, { step: 5, semi: 10, velocity: .55 }, { step: 7, semi: 7, velocity: .66 }],
-  [{ step: 0, semi: 12, velocity: .72 }, { step: 2, semi: 7, velocity: .62 }, { step: 3.5, semi: 5, velocity: .55 }, { step: 5, semi: 3, velocity: .75 }, { step: 7, semi: 0, velocity: .86 }],
-  [{ step: 0, semi: 0, velocity: .82 }, { step: .5, semi: 7, velocity: .44 }, { step: 2, semi: 12, velocity: .72 }, { step: 3, semi: 15, velocity: .48 }, { step: 4.5, semi: 19, velocity: .65 }, { step: 7, semi: 12, velocity: .58 }],
-  [{ step: 0, semi: 0, velocity: .78 }, { step: 2, semi: 5, velocity: .55 }, { step: 3, semi: 12, velocity: .82 }, { step: 4, semi: 7, velocity: .62 }, { step: 6, semi: 14, velocity: .72 }, { step: 7.5, semi: 19, velocity: .45 }],
-  [0, 1, 2, 3, 4, 5, 6, 7].map((step, i) => ({ step, semi: [12, 7, 3, 0, 3, 7, 12, 15][i], velocity: .84 - i * .045 })),
+  [
+    { step: 0, drum: 0, velocity: 1 }, { step: 2, drum: 2, velocity: .34 }, { step: 4, drum: 0, velocity: .7 }, { step: 6, drum: 1, velocity: .46 },
+    { step: 8, drum: 0, velocity: .9 }, { step: 11, drum: 2, velocity: .42 }, { step: 13, drum: 0, velocity: .62 }, { step: 15, drum: 1, velocity: .68 },
+    { step: 16, drum: 0, velocity: 1 }, { step: 19, drum: 0, velocity: .55 }, { step: 20, drum: 2, velocity: .36 }, { step: 23, drum: 1, velocity: .58 },
+    { step: 24, drum: 0, velocity: .78 }, { step: 26, drum: 0, velocity: .48 }, { step: 29, drum: 2, velocity: .5 }, { step: 31, drum: 1, velocity: .82 },
+  ],
+  [
+    { step: 0, drum: 1, velocity: 1 }, { step: 1.5, drum: 1, velocity: .34 }, { step: 3, drum: 2, velocity: .42 }, { step: 6, drum: 1, velocity: .58 },
+    { step: 7.5, drum: 1, velocity: .36 }, { step: 10, drum: 2, velocity: .5 }, { step: 12, drum: 1, velocity: .72 }, { step: 15, drum: 1, velocity: .44 },
+    { step: 16, drum: 1, velocity: .9 }, { step: 18.5, drum: 2, velocity: .4 }, { step: 21, drum: 1, velocity: .54 }, { step: 23.5, drum: 1, velocity: .38 },
+    { step: 26, drum: 2, velocity: .48 }, { step: 28, drum: 1, velocity: .7 }, { step: 29.5, drum: 1, velocity: .42 }, { step: 31, drum: 3, velocity: .65 },
+  ],
+  [0, 1, 2.5, 3, 4.5, 6, 7.5, 9, 10, 11.5, 13, 14.5, 16, 17, 18.5, 20, 21.5, 23, 24.5, 26, 27, 28.5, 30, 31.5]
+    .map((step, i) => ({ step, drum: 2, velocity: i % 6 === 0 ? .96 : i % 3 === 0 ? .67 : .4 })),
+  [
+    { step: 0, drum: 3, velocity: 1 }, { step: 3, drum: 2, velocity: .38 }, { step: 6, drum: 3, velocity: .58 }, { step: 9.5, drum: 3, velocity: .42 },
+    { step: 12, drum: 1, velocity: .48 }, { step: 15, drum: 3, velocity: .76 }, { step: 16, drum: 3, velocity: .9 }, { step: 18, drum: 2, velocity: .34 },
+    { step: 21, drum: 3, velocity: .55 }, { step: 23.5, drum: 1, velocity: .5 }, { step: 26, drum: 3, velocity: .7 }, { step: 29, drum: 2, velocity: .44 }, { step: 31, drum: 3, velocity: .86 },
+  ],
+  [
+    { step: 0, drum: 4, semi: 0, velocity: .86 }, { step: 4, drum: 4, semi: 7, velocity: .56 }, { step: 7, drum: 4, semi: 12, velocity: .7 },
+    { step: 11, drum: 4, semi: 3, velocity: .5 }, { step: 14, drum: 4, semi: 10, velocity: .62 }, { step: 16, drum: 4, semi: 12, velocity: .8 },
+    { step: 19, drum: 4, semi: 7, velocity: .46 }, { step: 23, drum: 4, semi: 15, velocity: .68 }, { step: 27, drum: 4, semi: 5, velocity: .52 }, { step: 31, drum: 4, semi: 0, velocity: .74 },
+  ],
+  [
+    { step: 0, semi: 0, velocity: 1 }, { step: 3, semi: 0, velocity: .62 }, { step: 6, semi: 3, velocity: .8 }, { step: 10, semi: 5, velocity: .66 },
+    { step: 13, semi: 7, velocity: .84 }, { step: 16, semi: 0, velocity: .94 }, { step: 19, semi: 3, velocity: .6 }, { step: 22, semi: 5, velocity: .76 },
+    { step: 25, semi: 10, velocity: .64 }, { step: 28, semi: 7, velocity: .82 }, { step: 31, semi: 5, velocity: .52 },
+  ],
+  [
+    { step: 0, semi: 0, velocity: .92 }, { step: 2, semi: 7, velocity: .56 }, { step: 5, semi: 5, velocity: .78 }, { step: 8, semi: 0, velocity: .62 },
+    { step: 11, semi: 10, velocity: .8 }, { step: 14, semi: 7, velocity: .56 }, { step: 16, semi: 3, velocity: .88 }, { step: 18, semi: 10, velocity: .5 },
+    { step: 21, semi: 7, velocity: .74 }, { step: 24, semi: 0, velocity: .68 }, { step: 27, semi: 5, velocity: .8 }, { step: 30, semi: 10, velocity: .58 },
+  ],
+  [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30]
+    .map((step, i) => ({ step, semi: [0, 2, 3, 5, 7, 10, 12, 7, 0, 3, 5, 7, 12, 10, 7, 3][i], velocity: i % 4 === 0 ? .9 : .58 + (i % 3) * .08 })),
+  [
+    { step: 0, semi: 0, velocity: .94 }, { step: 3, semi: 7, velocity: .6 }, { step: 6, semi: 0, velocity: .76 }, { step: 9, semi: 10, velocity: .66 },
+    { step: 12, semi: 5, velocity: .8 }, { step: 15, semi: 7, velocity: .48 }, { step: 16, semi: 0, velocity: .9 }, { step: 20, semi: 12, velocity: .62 },
+    { step: 23, semi: 10, velocity: .7 }, { step: 26, semi: 5, velocity: .78 }, { step: 29, semi: 3, velocity: .58 }, { step: 31, semi: 0, velocity: .84 },
+  ],
+  [
+    { step: 0, semi: 12, velocity: .9 }, { step: 2, semi: 7, velocity: .58 }, { step: 5, semi: 3, velocity: .72 }, { step: 8, semi: 0, velocity: .84 },
+    { step: 11, semi: -5, velocity: .64 }, { step: 14, semi: 0, velocity: .5 }, { step: 16, semi: 7, velocity: .86 }, { step: 19, semi: 3, velocity: .6 },
+    { step: 22, semi: 0, velocity: .78 }, { step: 25, semi: -5, velocity: .56 }, { step: 28, semi: -12, velocity: .7 }, { step: 31, semi: -5, velocity: .48 },
+  ],
+  [
+    { step: 0, semi: 0, velocity: .84, duration: 4 }, { step: 6, semi: 7, velocity: .6, duration: 3 }, { step: 12, semi: 12, velocity: .48, duration: 4 },
+    { step: 16, semi: 3, velocity: .78, duration: 4 }, { step: 22, semi: 10, velocity: .56, duration: 3 }, { step: 28, semi: 7, velocity: .68, duration: 4 },
+  ],
+  [
+    { step: 0, semi: 0, velocity: .76, duration: 3 }, { step: 4, semi: 3, velocity: .5, duration: 2 }, { step: 8, semi: 7, velocity: .66, duration: 3 }, { step: 12, semi: 10, velocity: .48, duration: 2 },
+    { step: 16, semi: 12, velocity: .72, duration: 3 }, { step: 20, semi: 10, velocity: .5, duration: 2 }, { step: 24, semi: 7, velocity: .64, duration: 3 }, { step: 28, semi: 3, velocity: .54, duration: 3 },
+  ],
+  [0, 2, 4, 6, 9, 12, 14, 16, 18, 20, 22, 25, 28, 30]
+    .map((step, i) => ({ step, semi: [0, 3, 7, 12, 15, 19, 15, 12, 7, 3, 0, 7, 12, 19][i], velocity: .54 + (i % 4) * .08 })),
+  [0, 2, 4, 6, 9, 12, 14, 16, 18, 20, 22, 25, 28, 30]
+    .map((step, i) => ({ step, semi: [12, 7, 3, 0, -5, -12, -5, 0, 3, 7, 12, 7, 3, 0][i], velocity: .76 - (i % 3) * .08 })),
+  [
+    { step: 0, semi: 0, velocity: .78, duration: 5 }, { step: 5, semi: 5, velocity: .52, duration: 3 }, { step: 10, semi: 7, velocity: .66, duration: 4 },
+    { step: 16, semi: 12, velocity: .74, duration: 5 }, { step: 22, semi: 10, velocity: .5, duration: 3 }, { step: 27, semi: 7, velocity: .64, duration: 5 },
+  ],
+  [
+    { step: 0, semi: 0, velocity: .9 }, { step: 2, semi: 3, velocity: .58 }, { step: 5, semi: 7, velocity: .76 }, { step: 8, semi: 10, velocity: .52 },
+    { step: 11, semi: 7, velocity: .64 }, { step: 14, semi: 12, velocity: .56 }, { step: 16, semi: 15, velocity: .82 }, { step: 19, semi: 12, velocity: .58 },
+    { step: 22, semi: 10, velocity: .72 }, { step: 25, semi: 7, velocity: .54 }, { step: 28, semi: 3, velocity: .68 }, { step: 31, semi: 0, velocity: .8 },
+  ],
+  [
+    { step: 0, semi: 12, velocity: .72 }, { step: 3, semi: 7, velocity: .62 }, { step: 6, semi: 5, velocity: .54 }, { step: 9, semi: 3, velocity: .74 },
+    { step: 12, semi: 0, velocity: .84 }, { step: 15, semi: 7, velocity: .48 }, { step: 16, semi: 3, velocity: .7 }, { step: 19, semi: 5, velocity: .58 },
+    { step: 22, semi: 7, velocity: .76 }, { step: 25, semi: 12, velocity: .56 }, { step: 28, semi: 15, velocity: .68 }, { step: 31, semi: 12, velocity: .8 },
+  ],
+  [0, 1, 3, 5, 7, 10, 12, 14, 16, 17, 19, 21, 23, 26, 28, 30]
+    .map((step, i) => ({ step, semi: [0, 7, 12, 15, 19, 12, 7, 15, 12, 19, 15, 12, 7, 3, 7, 12][i], velocity: i % 4 === 0 ? .82 : .46 + (i % 3) * .08 })),
+  [
+    { step: 0, semi: 0, velocity: .78 }, { step: 3, semi: 5, velocity: .54 }, { step: 6, semi: 12, velocity: .82 }, { step: 9, semi: 7, velocity: .6 },
+    { step: 12, semi: 14, velocity: .7 }, { step: 15, semi: 19, velocity: .46 }, { step: 16, semi: 12, velocity: .84 }, { step: 19, semi: 7, velocity: .58 },
+    { step: 22, semi: 3, velocity: .72 }, { step: 25, semi: 10, velocity: .52 }, { step: 28, semi: 15, velocity: .68 }, { step: 31, semi: 19, velocity: .48 },
+  ],
+  [0, 1, 2, 3, 5, 7, 9, 11, 13, 15, 16, 18, 20, 22, 24, 26, 28, 30, 31]
+    .map((step, i) => ({ step, semi: [12, 7, 3, 0, 3, 7, 12, 15, 19, 15, 12, 7, 3, 0, 7, 12, 15, 19, 24][i], velocity: .82 - (i % 5) * .055 })),
 ];
 
 const app = document.querySelector<HTMLElement>("#app")!;
@@ -65,8 +126,6 @@ const localVideo = document.createElement("video");
 localVideo.muted = true;
 localVideo.playsInline = true;
 localVideo.autoplay = true;
-const takoTexture = new Image();
-takoTexture.src = "./tako-vj-texture.png";
 
 const state = {
   audio: null as AudioContext | null,
@@ -394,37 +453,47 @@ function playBackgroundStep(step: number, at: number) {
   }
 }
 
+function drawOctoField(now: number, width: number, height: number) {
+  const energy = Math.min(1, state.ripples.length / 12);
+  const phase = now * .00032;
+  const radius = Math.min(width, height) * (.46 + energy * .12);
+  visual.save();
+  visual.translate(width * .68, height * .52);
+  visual.strokeStyle = "#f4f4ef";
+  visual.fillStyle = "#050505";
+  visual.lineCap = "round";
+  visual.globalAlpha = .022 + energy * .055;
+  for (let arm = 0; arm < 8; arm++) {
+    const base = arm / 8 * Math.PI * 2 + phase * (arm % 2 ? -.18 : .14);
+    visual.lineWidth = .7 + (arm % 3) * .28 + energy;
+    visual.beginPath();
+    for (let point = 0; point <= 72; point++) {
+      const t = point / 72;
+      const travel = 12 + t * radius;
+      const bend = Math.sin(t * Math.PI * (2.2 + arm * .08) + phase * 3 + arm) * (18 + t * 58);
+      const px = Math.cos(base) * travel - Math.sin(base) * bend;
+      const py = Math.sin(base) * travel + Math.cos(base) * bend;
+      point ? visual.lineTo(px, py) : visual.moveTo(px, py);
+      if (point > 10 && point % 9 === 0) {
+        const cup = 2.5 + t * 4.5;
+        visual.moveTo(px + cup, py);
+        visual.arc(px, py, cup, 0, Math.PI * 2);
+        visual.moveTo(px + cup * .38, py);
+        visual.arc(px, py, cup * .38, 0, Math.PI * 2);
+      }
+    }
+    visual.stroke();
+  }
+  visual.restore();
+}
+
 function drawVisuals(now: number) {
   const width = window.innerWidth;
   const height = window.innerHeight;
   visual.fillStyle = "rgba(5, 5, 5, 0.16)";
   visual.fillRect(0, 0, width, height);
 
-  if (takoTexture.complete && takoTexture.naturalWidth) {
-    const energy = Math.min(1, state.ripples.length / 9);
-    const cover = Math.max(width / takoTexture.naturalWidth, height / takoTexture.naturalHeight);
-    const zoom = cover * (1.03 + energy * .13 + Math.sin(now * .00022) * .025);
-    const imageWidth = takoTexture.naturalWidth * zoom;
-    const imageHeight = takoTexture.naturalHeight * zoom;
-    const offsetX = (width - imageWidth) / 2 + Math.sin(now * .00017) * width * .018;
-    const offsetY = (height - imageHeight) / 2 + Math.cos(now * .00013) * height * .018;
-    visual.save();
-    visual.globalCompositeOperation = "screen";
-    visual.globalAlpha = .045 + energy * .13;
-    visual.filter = "contrast(1.45)";
-    visual.drawImage(takoTexture, offsetX, offsetY, imageWidth, imageHeight);
-    if (energy > .08) {
-      visual.globalAlpha = .06 + energy * .12;
-      for (let slice = 0; slice < 6; slice++) {
-        const sourceY = ((state.lastStep * 71 + slice * 137) % takoTexture.naturalHeight);
-        const sourceHeight = 18 + (slice % 3) * 16;
-        const destY = sourceY / takoTexture.naturalHeight * height;
-        const shift = Math.sin(state.lastStep * 2.7 + slice) * 55 * energy;
-        visual.drawImage(takoTexture, 0, sourceY, takoTexture.naturalWidth, sourceHeight, shift, destY, width, sourceHeight * zoom);
-      }
-    }
-    visual.restore();
-  }
+  drawOctoField(now, width, height);
 
   visual.save();
   visual.globalAlpha = .055;
@@ -591,37 +660,63 @@ function drawVisuals(now: number) {
       }
     }
 
-    visual.globalAlpha = life * .82;
-    visual.lineWidth = 1.3;
+    visual.globalAlpha = life * .72;
+    visual.lineWidth = 1.2;
     const motif = pattern % 5;
     if (motif === 0) {
-      for (let cup = 0; cup < 10; cup++) {
-        const a = cup * .58 + age * 1.8; const radius = 35 + cup * 10 + age * 25;
+      for (let cup = 0; cup < 16; cup++) {
+        const a = cup * .44 + age * 1.5; const radius = 28 + cup * 9 + age * 32;
         const cx = Math.cos(a) * radius; const cy = Math.sin(a) * radius;
-        visual.beginPath(); visual.arc(cx, cy, 5 + cup * .45, 0, Math.PI * 2); visual.stroke();
-        visual.beginPath(); visual.arc(cx, cy, 1.8 + cup * .15, 0, Math.PI * 2); visual.fill();
+        const size = 3.5 + cup * .28;
+        visual.beginPath(); visual.arc(cx, cy, size, 0, Math.PI * 2); visual.stroke();
+        visual.beginPath(); visual.arc(cx, cy, size * .42, 0, Math.PI * 2); visual.stroke();
       }
     } else if (motif === 1) {
-      for (let steam = -1; steam <= 1; steam++) {
-        visual.beginPath(); visual.moveTo(steam * 28, 38);
-        visual.bezierCurveTo(steam * 54 + Math.sin(age * 5) * 20, -20, steam * 5 - Math.cos(age * 4) * 28, -75 - age * 25, steam * 30, -145 - age * 42);
+      visual.rotate(age * .24);
+      for (let arm = 0; arm < 8; arm++) {
+        const base = arm / 8 * Math.PI * 2;
+        visual.beginPath();
+        for (let point = 0; point <= 45; point++) {
+          const t = point / 45; const r = 18 + t * (120 + age * 80);
+          const a = base + Math.sin(t * 4 + age * 2 + arm) * .28;
+          const px = Math.cos(a) * r; const py = Math.sin(a) * r;
+          point ? visual.lineTo(px, py) : visual.moveTo(px, py);
+        }
         visual.stroke();
       }
     } else if (motif === 2) {
-      for (let ball = 0; ball < 20; ball++) {
-        const col = ball % 5; const row = Math.floor(ball / 5); const bx = (col - 2) * 29; const by = (row - 1.5) * 29;
-        visual.beginPath(); visual.arc(bx, by, 9 + Math.sin(age * 5 + ball) * 2, 0, Math.PI * 2); visual.stroke();
-        visual.beginPath(); visual.moveTo(bx - 6, by + 2); visual.quadraticCurveTo(bx, by - 5, bx + 6, by + 1); visual.stroke();
+      visual.rotate(age * -.18);
+      for (let cell = 0; cell < 35; cell++) {
+        const col = cell % 7; const row = Math.floor(cell / 7); const bx = (col - 3) * 25; const by = (row - 2) * 25;
+        const sides = 5 + (cell % 3); const cellRadius = 4 + ((cell * 7) % 9) + age * 3;
+        visual.beginPath();
+        for (let side = 0; side <= sides; side++) {
+          const a = side / sides * Math.PI * 2 + cell * .17;
+          const px = bx + Math.cos(a) * cellRadius; const py = by + Math.sin(a) * cellRadius;
+          side ? visual.lineTo(px, py) : visual.moveTo(px, py);
+        }
+        visual.stroke();
       }
     } else if (motif === 3) {
-      visual.lineWidth = 7 * life + 1;
+      visual.lineWidth = 5 * life + 1;
       visual.beginPath(); visual.moveTo(-170 - age * 20, 80);
       visual.bezierCurveTo(-80, -130 - age * 30, 65, 145 + age * 25, 190 + age * 38, -70); visual.stroke();
-      visual.lineWidth = 1;
-      for (let cup = 0; cup < 12; cup++) { const t = cup / 11; const cx = -145 + t * 300; const cy = Math.sin(t * Math.PI * 3 + age) * 50; visual.beginPath(); visual.arc(cx, cy, 4 + cup * .18, 0, Math.PI * 2); visual.stroke(); }
+      visual.lineWidth = 1.1;
+      for (let cup = 0; cup < 15; cup++) {
+        const t = cup / 14; const cx = -145 + t * 300; const cy = Math.sin(t * Math.PI * 3 + age) * 50;
+        visual.beginPath(); visual.arc(cx, cy, 3 + cup * .16, 0, Math.PI * 2); visual.stroke();
+        visual.beginPath(); visual.arc(cx, cy, 1.2 + cup * .06, 0, Math.PI * 2); visual.stroke();
+      }
     } else {
-      const eyeGap = 28 + age * 10;
-      [-1, 1].forEach((side) => { visual.beginPath(); visual.ellipse(side * eyeGap, 0, 18 + age * 5, 27 + age * 8, side * .12, 0, Math.PI * 2); visual.stroke(); visual.beginPath(); visual.arc(side * eyeGap + Math.sin(age * 6) * 5, 3, 5, 0, Math.PI * 2); visual.fill(); });
+      visual.rotate(age * .3);
+      for (let contour = 0; contour < 12; contour++) {
+        const radius = 20 + contour * 12 + age * 26;
+        const squeeze = .32 + (contour % 4) * .11;
+        visual.globalAlpha = life * (.82 - contour * .045);
+        visual.beginPath();
+        visual.ellipse((contour % 2 ? -1 : 1) * contour * 2.2, 0, radius, radius * squeeze, contour * .38, contour * .16, Math.PI * (1.45 + contour * .06));
+        visual.stroke();
+      }
     }
     visual.restore();
   });
@@ -751,7 +846,7 @@ function buildPadGrid() {
   pads.forEach((pad, index) => {
     const button = document.createElement("button"); button.className = `mini-pad ${pad.family}`; button.dataset.pad = String(index); button.style.setProperty("--pad-color", pad.color);
     button.innerHTML = `<span>${String(index + 1).padStart(2, "0")}</span><b>${pad.name}</b><kbd>${pad.key.toUpperCase()}</kbd>`;
-    button.title = `${pad.name} — ${phrases[index].length}音のフレーズ`;
+    button.title = `${pad.name} — ${phrases[index].length}音・2小節のフレーズ`;
     button.addEventListener("pointerdown", (event) => { event.preventDefault(); triggerPad(index, 1); }); grid.appendChild(button);
   });
 }
