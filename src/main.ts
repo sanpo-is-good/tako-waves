@@ -118,14 +118,19 @@ const phrases: PhraseNote[][] = [
 const app = document.querySelector<HTMLElement>("#app")!;
 const visualCanvas = document.querySelector<HTMLCanvasElement>("#visualCanvas")!;
 const sourceCanvas = document.querySelector<HTMLCanvasElement>("#sourceCanvas")!;
+const stageSourceCanvas = document.querySelector<HTMLCanvasElement>("#stageSourceCanvas")!;
 const visual = visualCanvas.getContext("2d")!;
 const sourceView = sourceCanvas.getContext("2d")!;
+const stageSourceView = stageSourceCanvas.getContext("2d")!;
 const analysisCanvas = document.createElement("canvas");
 const analysis = analysisCanvas.getContext("2d", { willReadFrequently: true })!;
 const localVideo = document.createElement("video");
 localVideo.muted = true;
 localVideo.playsInline = true;
 localVideo.autoplay = true;
+const venueMode = new URLSearchParams(window.location.search).get("mode") === "404";
+document.documentElement.classList.toggle("venue-404", venueMode);
+app.classList.toggle("venue-404", venueMode);
 
 const state = {
   audio: null as AudioContext | null,
@@ -161,11 +166,19 @@ const state = {
 
 function resizeCanvases() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  visualCanvas.width = Math.round(window.innerWidth * dpr);
-  visualCanvas.height = Math.round(window.innerHeight * dpr);
-  visualCanvas.style.width = `${window.innerWidth}px`;
-  visualCanvas.style.height = `${window.innerHeight}px`;
+  const venueHeight = Math.min(window.innerHeight, window.innerWidth * 880 / 3840);
+  const visualWidth = venueMode ? window.innerWidth / 2 : window.innerWidth;
+  const visualHeight = venueMode ? venueHeight : window.innerHeight;
+  visualCanvas.width = Math.round(visualWidth * dpr);
+  visualCanvas.height = Math.round(visualHeight * dpr);
+  visualCanvas.style.width = `${visualWidth}px`;
+  visualCanvas.style.height = `${visualHeight}px`;
   visual.setTransform(dpr, 0, 0, dpr, 0, 0);
+  stageSourceCanvas.width = Math.round(window.innerWidth / 2 * dpr);
+  stageSourceCanvas.height = Math.round(venueHeight * dpr);
+  stageSourceCanvas.style.width = `${window.innerWidth / 2}px`;
+  stageSourceCanvas.style.height = `${venueHeight}px`;
+  stageSourceView.setTransform(dpr, 0, 0, dpr, 0, 0);
   sourceCanvas.width = 640;
   sourceCanvas.height = 360;
   analysisCanvas.width = 320;
@@ -488,8 +501,8 @@ function drawOctoField(now: number, width: number, height: number) {
 }
 
 function drawVisuals(now: number) {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+  const width = venueMode ? window.innerWidth / 2 : window.innerWidth;
+  const height = venueMode ? Math.min(window.innerHeight, window.innerWidth * 880 / 3840) : window.innerHeight;
   visual.fillStyle = "rgba(5, 5, 5, 0.16)";
   visual.fillRect(0, 0, width, height);
 
@@ -725,6 +738,45 @@ function drawVisuals(now: number) {
   requestAnimationFrame(drawVisuals);
 }
 
+function drawVenueSource(hasFrame: boolean, now: number) {
+  if (!venueMode) return;
+  const width = window.innerWidth / 2;
+  const height = Math.min(window.innerHeight, window.innerWidth * 880 / 3840);
+  stageSourceView.save();
+  stageSourceView.fillStyle = "#050505";
+  stageSourceView.fillRect(0, 0, width, height);
+  if (hasFrame) {
+    const scale = Math.max(width / sourceCanvas.width, height / sourceCanvas.height);
+    const drawWidth = sourceCanvas.width * scale;
+    const drawHeight = sourceCanvas.height * scale;
+    stageSourceView.globalAlpha = .92;
+    stageSourceView.filter = "grayscale(1) contrast(1.3) brightness(.82)";
+    stageSourceView.drawImage(sourceCanvas, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
+    stageSourceView.filter = "none";
+    stageSourceView.globalCompositeOperation = "screen";
+    stageSourceView.globalAlpha = .12;
+    for (let line = 0; line < 14; line++) {
+      const y = line / 13 * height;
+      stageSourceView.fillStyle = line % 3 ? "#f4f4ef" : "#050505";
+      stageSourceView.fillRect(0, y, width, 1);
+    }
+  } else {
+    stageSourceView.strokeStyle = "#f4f4ef";
+    stageSourceView.lineWidth = 1;
+    stageSourceView.globalAlpha = .18;
+    const gapX = width / 6;
+    const gapY = height / 5;
+    for (let hole = 0; hole < 20; hole++) {
+      const x = gapX * (1 + hole % 5);
+      const y = gapY * (1 + Math.floor(hole / 5));
+      const pulse = 7 + Math.sin(now * .0014 + hole * .72) * 3;
+      stageSourceView.beginPath(); stageSourceView.arc(x, y, pulse, 0, Math.PI * 2); stageSourceView.stroke();
+      stageSourceView.beginPath(); stageSourceView.arc(x, y, pulse * 2.2, 0, Math.PI * 2); stageSourceView.stroke();
+    }
+  }
+  stageSourceView.restore();
+}
+
 function drawSource() {
   sourceView.fillStyle = "#10100f"; sourceView.fillRect(0, 0, sourceCanvas.width, sourceCanvas.height);
   let frame: CanvasImageSource | null = null;
@@ -741,6 +793,7 @@ function drawSource() {
     sourceView.fillText("映像入力を接続", sourceCanvas.width / 2, sourceCanvas.height / 2 - 8);
     sourceView.font = "13px system-ui"; sourceView.fillText("または20穴をクリックしてテスト", sourceCanvas.width / 2, sourceCanvas.height / 2 + 20);
   }
+  drawVenueSource(Boolean(frame), performance.now());
   if (state.sourceReady && state.baseline.length === 20) detectTouches();
   drawPadOverlay();
   requestAnimationFrame(drawSource);
@@ -891,8 +944,19 @@ document.querySelector("#panelToggle")?.addEventListener("click", () => {
   document.querySelector("#panelToggle")!.textContent = state.panelHidden ? "SHOW INPUT" : "HIDE INPUT";
 });
 document.querySelector("#fullscreenButton")?.addEventListener("click", () => { if (document.fullscreenElement) void document.exitFullscreen(); else void document.documentElement.requestFullscreen(); });
+document.querySelector("#venueFullscreenButton")?.addEventListener("click", () => { if (document.fullscreenElement) void document.exitFullscreen(); else void document.documentElement.requestFullscreen(); });
+document.querySelector("#venueSettingsButton")?.addEventListener("click", (event) => {
+  const open = !app.classList.contains("settings-open");
+  app.classList.toggle("settings-open", open);
+  (event.currentTarget as HTMLElement).setAttribute("aria-expanded", String(open));
+});
 document.addEventListener("keydown", (event) => {
   if ((event.target as HTMLElement).tagName === "INPUT" || event.repeat) return;
+  if (venueMode && event.key === "Escape" && app.classList.contains("settings-open")) {
+    app.classList.remove("settings-open");
+    document.querySelector("#venueSettingsButton")?.setAttribute("aria-expanded", "false");
+    return;
+  }
   const index = pads.findIndex((pad) => pad.key === event.key.toLowerCase()); if (index >= 0) triggerPad(index, 1);
   if (event.key === " ") { event.preventDefault(); if (document.fullscreenElement) void document.exitFullscreen(); else void document.documentElement.requestFullscreen(); }
 });

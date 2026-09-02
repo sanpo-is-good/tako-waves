@@ -69,3 +69,31 @@ button,input { font:inherit; } button { color:inherit; }
 @keyframes pulse { 50%{opacity:.25} } @keyframes wave { 50%{transform:scaleY(.42) scaleX(1.7)} }
 @media(max-width:900px){ body{overflow:auto}.topbar{height:62px;padding:0 13px}.transport-status span:nth-child(-n+2),#fullscreenButton{display:none}.input-panel,.instrument-panel,.loop-bar{position:relative;inset:auto;width:auto;margin:12px}.input-panel{margin-top:76px;max-height:none;overflow:visible}.instrument-panel{margin-bottom:86px}.loop-bar{position:fixed;left:0;right:0;bottom:0;margin:0}.loop-bar p,.loop-title small{display:none}.loop-title{width:auto;flex:1}.panel-hidden .input-panel{display:none}}
 @media(max-width:540px){.brand-lockup small{display:none}.pad-grid{gap:3px}.mini-pad{padding:5px}.mini-pad b{margin-top:5px;font-size:7px}.mini-pad kbd,.mini-pad::after{display:none}.instrument-head p{display:none}.loop-title>span{display:none}.loop-title{grid-template-columns:1fr}}
+
+.venue-stage,.venue-tools { display:none; }
+html.venue-404 { --venue-height:min(100vh,22.916667vw); background:#000; }
+html.venue-404 body { min-height:100vh; overflow:hidden; background:#000; }
+html.venue-404 #app { min-height:100vh; background:#000; }
+html.venue-404 #visualCanvas { position:fixed; z-index:2; top:0; left:50vw; right:auto; bottom:auto; }
+html.venue-404 .venue-stage { position:fixed; z-index:3; top:0; left:0; display:block; width:100vw; height:var(--venue-height); overflow:hidden; background:transparent; }
+html.venue-404 #stageSourceCanvas { position:absolute; inset:0 auto auto 0; display:block; }
+html.venue-404 .venue-divider { position:absolute; z-index:4; top:0; bottom:0; left:50%; width:2px; transform:translateX(-1px); background:rgba(244,244,239,.78); box-shadow:0 0 24px rgba(255,255,255,.16); }
+html.venue-404 .topbar,html.venue-404 .instrument-panel,html.venue-404 .loop-bar { display:none; }
+html.venue-404 .input-panel { display:none; }
+html.venue-404 #app.settings-open .input-panel { position:fixed; z-index:90; inset:16px auto auto 16px; display:block; width:min(420px,calc(50vw - 32px)); max-height:calc(var(--venue-height) - 32px); padding:18px; overflow-y:auto; transform:none; opacity:1; pointer-events:auto; border-color:rgba(255,255,255,.55); background:rgba(5,5,5,.96); box-shadow:0 24px 80px rgba(0,0,0,.7); }
+html.venue-404 .venue-tools { position:fixed; z-index:100; top:14px; right:14px; display:flex; gap:7px; }
+html.venue-404 .venue-tools button { width:42px; height:30px; padding:0; border:1px solid rgba(244,244,239,.38); color:#f4f4ef; background:rgba(5,5,5,.48); opacity:.36; cursor:pointer; font:500 8px "DM Mono",monospace; letter-spacing:.06em; backdrop-filter:blur(10px); transition:opacity .2s,background .2s; }
+html.venue-404 .venue-tools button:hover,html.venue-404 #app.settings-open #venueSettingsButton { opacity:1; color:#050505; background:#f4f4ef; }
+html.venue-404 .start-overlay { inset:0 auto auto 0; width:100vw; height:var(--venue-height); place-content:center; background:#050505; }
+html.venue-404 .start-overlay>*:not(button) { display:none; }
+html.venue-404 .start-overlay button { width:76px; height:76px; justify-content:center; padding:0; border-radius:50%; border-color:rgba(244,244,239,.75); color:transparent; font-size:0; }
+html.venue-404 .start-overlay button::before { content:"▶"; margin-left:4px; color:#f4f4ef; font-size:17px; }
+html.venue-404 .start-overlay button span { display:none; }
+html.venue-404 .start-overlay button:hover::before { color:#050505; }
+html.venue-404 .connect-dialog { top:calc(var(--venue-height) / 2); }
+html.venue-404 .system-message { top:calc(var(--venue-height) - 48px); bottom:auto; }
+
+@media(max-width:900px){
+  html.venue-404 body { overflow:hidden; }
+  html.venue-404 #app.settings-open .input-panel { position:fixed; inset:10px auto auto 10px; width:min(460px,calc(100vw - 74px)); max-height:calc(var(--venue-height) - 20px); margin:0; overflow-y:auto; }
+}

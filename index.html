@@ -10,6 +10,14 @@
   <body>
     <main id="app">
       <canvas id="visualCanvas" aria-label="演奏に反応するジェネラティブ映像"></canvas>
+      <div class="venue-stage" aria-label="404 SHIBUYA パフォーマンス画面">
+        <canvas id="stageSourceCanvas" aria-label="たこ焼き器のリアルタイム映像"></canvas>
+        <div class="venue-divider" aria-hidden="true"></div>
+      </div>
+      <div class="venue-tools">
+        <button id="venueSettingsButton" aria-label="設定を開く" aria-expanded="false">SET</button>
+        <button id="venueFullscreenButton" aria-label="全画面表示">⛶</button>
+      </div>
       <header class="topbar">
         <div class="brand-lockup"><span class="brand-mark">●</span><div><strong>TAKO WAVES</strong><small>20-HOLE AUDIOVISUAL INSTRUMENT</small></div></div>
         <div class="transport-status">
