@@ -65,10 +65,13 @@ const localVideo = document.createElement("video");
 localVideo.muted = true;
 localVideo.playsInline = true;
 localVideo.autoplay = true;
+const takoTexture = new Image();
+takoTexture.src = "./tako-vj-texture.png";
 
 const state = {
   audio: null as AudioContext | null,
   master: null as GainNode | null,
+  fx: null as GainNode | null,
   noise: null as AudioBuffer | null,
   started: false,
   bpm: 108,
@@ -131,10 +134,20 @@ async function startAudio() {
     const audio = new AudioContext();
     const master = audio.createGain();
     const compressor = audio.createDynamicsCompressor();
+    const fx = audio.createGain();
+    const delay = audio.createDelay(1);
+    const feedback = audio.createGain();
     master.gain.value = 0.72;
     master.connect(compressor).connect(audio.destination);
+    fx.gain.value = .11;
+    delay.delayTime.value = .245;
+    feedback.gain.value = .23;
+    fx.connect(delay);
+    delay.connect(feedback).connect(delay);
+    delay.connect(compressor);
     state.audio = audio;
     state.master = master;
+    state.fx = fx;
     state.noise = makeNoise(audio);
     state.transportStart = audio.currentTime;
   }
@@ -150,6 +163,7 @@ function envGain(at: number, peak: number, duration: number) {
   gain.gain.exponentialRampToValueAtTime(Math.max(0.001, peak), at + 0.006);
   gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
   gain.connect(state.master!);
+  if (state.fx) gain.connect(state.fx);
   return gain;
 }
 
@@ -167,6 +181,94 @@ function playTone(freq: number, type: OscillatorType, at: number, duration: numb
   osc.connect(filter).connect(gain);
   osc.start(at);
   osc.stop(at + duration + 0.04);
+}
+
+function playFM(freq: number, at: number, duration: number, level: number, ratio: number, depth: number) {
+  const audio = state.audio!;
+  const carrier = audio.createOscillator();
+  const modulator = audio.createOscillator();
+  const modulation = audio.createGain();
+  const filter = audio.createBiquadFilter();
+  const gain = envGain(at, level, duration);
+  carrier.type = "sine";
+  modulator.type = "sine";
+  carrier.frequency.value = freq;
+  modulator.frequency.value = freq * ratio;
+  modulation.gain.setValueAtTime(freq * depth, at);
+  modulation.gain.exponentialRampToValueAtTime(Math.max(1, freq * .08), at + duration);
+  filter.type = "bandpass";
+  filter.frequency.value = Math.min(7600, freq * 4.5);
+  filter.Q.value = 1.6;
+  modulator.connect(modulation).connect(carrier.frequency);
+  carrier.connect(filter).connect(gain);
+  carrier.start(at); modulator.start(at);
+  carrier.stop(at + duration + .05); modulator.stop(at + duration + .05);
+}
+
+function playPluck(freq: number, at: number, duration: number, level: number, bright = 1) {
+  const audio = state.audio!;
+  const osc = audio.createOscillator();
+  const filter = audio.createBiquadFilter();
+  const gain = envGain(at, level, Math.min(duration, .5));
+  osc.type = bright > .7 ? "triangle" : "sine";
+  osc.frequency.setValueAtTime(freq * 1.012, at);
+  osc.frequency.exponentialRampToValueAtTime(freq, at + .035);
+  filter.type = "lowpass";
+  filter.Q.value = 7;
+  filter.frequency.setValueAtTime(Math.min(9000, freq * (7 + bright * 6)), at);
+  filter.frequency.exponentialRampToValueAtTime(Math.max(380, freq * 1.5), at + Math.min(duration, .42));
+  osc.connect(filter).connect(gain);
+  osc.start(at); osc.stop(at + duration + .04);
+}
+
+function playMetal(freq: number, at: number, duration: number, level: number) {
+  [1, 1.414, 2.37, 3.76, 5.12].forEach((ratio, index) => {
+    playTone(freq * ratio, "sine", at + index * .002, duration * (1 - index * .08), level / (index + 1), index * 4);
+  });
+}
+
+function playAcid(freq: number, at: number, duration: number, level: number) {
+  const audio = state.audio!;
+  const osc = audio.createOscillator();
+  const filter = audio.createBiquadFilter();
+  const gain = envGain(at, level, duration);
+  osc.type = "sawtooth";
+  osc.frequency.value = freq;
+  filter.type = "lowpass";
+  filter.Q.value = 14;
+  filter.frequency.setValueAtTime(Math.min(6800, freq * 18), at);
+  filter.frequency.exponentialRampToValueAtTime(Math.max(180, freq * 1.7), at + duration);
+  osc.connect(filter).connect(gain);
+  osc.start(at); osc.stop(at + duration + .04);
+}
+
+function playVibrato(freq: number, at: number, duration: number, level: number, type: OscillatorType = "sine") {
+  const audio = state.audio!;
+  const osc = audio.createOscillator();
+  const lfo = audio.createOscillator();
+  const depth = audio.createGain();
+  const gain = envGain(at, level, duration);
+  osc.type = type;
+  osc.frequency.value = freq;
+  lfo.frequency.value = 5.4;
+  depth.gain.value = freq * .012;
+  lfo.connect(depth).connect(osc.frequency);
+  osc.connect(gain);
+  osc.start(at); lfo.start(at);
+  osc.stop(at + duration + .04); lfo.stop(at + duration + .04);
+}
+
+function playBreath(freq: number, at: number, duration: number, level: number) {
+  const audio = state.audio!;
+  const noise = audio.createBufferSource();
+  const filter = audio.createBiquadFilter();
+  const gain = envGain(at, level, duration);
+  noise.buffer = state.noise;
+  filter.type = "bandpass";
+  filter.frequency.value = freq * 3.2;
+  filter.Q.value = 5;
+  noise.connect(filter).connect(gain);
+  noise.start(at); noise.stop(at + duration + .04);
 }
 
 function playDrum(index: number, at: number, velocity: number, semi = 0) {
@@ -199,12 +301,29 @@ function playVoice(index: number, at: number, velocity: number, semi = 0, durati
   const pad = pads[index];
   const freq = pad.freq * 2 ** (semi / 12);
   if (pad.family === "drum") playDrum(index, at, velocity, semi);
-  if (pad.family === "bass") playTone(freq, "sawtooth", at, duration || 0.34, 0.22 * velocity, -5);
+  const time = duration || (pad.family === "bass" ? .34 : pad.family === "chord" ? .72 : .3);
+  if (index === 5) { playTone(freq, "sawtooth", at, time, .15 * velocity, -7); playTone(freq / 2, "sine", at, time * 1.2, .13 * velocity); }
+  if (index === 6) playFM(freq, at, time, .22 * velocity, .5, 2.2);
+  if (index === 7) playPluck(freq, at, time, .23 * velocity, .55);
+  if (index === 8) playAcid(freq, at, time, .18 * velocity);
+  if (index === 9) { playTone(freq, "square", at, time, .075 * velocity, -9); playFM(freq / 2, at, time * 1.15, .14 * velocity, 1.5, 1.3); }
   if (pad.family === "chord") {
     const minor = index === 11 || index === 12;
-    [1, minor ? 1.1892 : 1.2599, 1.4983].forEach((ratio, voice) => playTone(freq * ratio, "triangle", at + voice * 0.008, duration || 0.72, 0.075 * velocity, voice * 3));
+    const chord = [1, minor ? 1.1892 : 1.2599, 1.4983];
+    chord.forEach((ratio, voice) => {
+      const note = freq * ratio;
+      if (index === 10) playTone(note, "square", at + voice * .008, time, .042 * velocity, voice * 3);
+      if (index === 11) playMetal(note * 2, at + voice * .012, time * 1.25, .045 * velocity);
+      if (index === 12) { playTone(note, "sine", at, time * 1.2, .06 * velocity); playTone(note * 2, "sine", at, time, .025 * velocity); }
+      if (index === 13) { playBreath(note, at, time, .025 * velocity); playTone(note, "triangle", at, time, .05 * velocity, voice * -4); }
+      if (index === 14) { playTone(note, "sawtooth", at, time, .028 * velocity, -8); playTone(note, "sawtooth", at, time, .028 * velocity, 8); }
+    });
   }
-  if (pad.family === "lead") playTone(freq, "sine", at, duration || 0.3, 0.15 * velocity, 3);
+  if (index === 15) playVibrato(freq, at, time, .15 * velocity, "sine");
+  if (index === 16) { playPluck(freq, at, time, .13 * velocity, .3); playTone(freq / 2, "square", at, time * .72, .035 * velocity); }
+  if (index === 17) playFM(freq, at, time, .13 * velocity, 2.01, 3.8);
+  if (index === 18) { playVibrato(freq, at, time, .1 * velocity, "triangle"); playTone(freq * 1.5, "sine", at, time * .8, .045 * velocity, 5); }
+  if (index === 19) { playMetal(freq, at, time, .08 * velocity); playPluck(freq / 2, at, time, .08 * velocity, 1); }
 }
 
 function playPhrase(index: number, at: number, velocity: number) {
@@ -280,6 +399,32 @@ function drawVisuals(now: number) {
   const height = window.innerHeight;
   visual.fillStyle = "rgba(5, 5, 5, 0.16)";
   visual.fillRect(0, 0, width, height);
+
+  if (takoTexture.complete && takoTexture.naturalWidth) {
+    const energy = Math.min(1, state.ripples.length / 9);
+    const cover = Math.max(width / takoTexture.naturalWidth, height / takoTexture.naturalHeight);
+    const zoom = cover * (1.03 + energy * .13 + Math.sin(now * .00022) * .025);
+    const imageWidth = takoTexture.naturalWidth * zoom;
+    const imageHeight = takoTexture.naturalHeight * zoom;
+    const offsetX = (width - imageWidth) / 2 + Math.sin(now * .00017) * width * .018;
+    const offsetY = (height - imageHeight) / 2 + Math.cos(now * .00013) * height * .018;
+    visual.save();
+    visual.globalCompositeOperation = "screen";
+    visual.globalAlpha = .045 + energy * .13;
+    visual.filter = "contrast(1.45)";
+    visual.drawImage(takoTexture, offsetX, offsetY, imageWidth, imageHeight);
+    if (energy > .08) {
+      visual.globalAlpha = .06 + energy * .12;
+      for (let slice = 0; slice < 6; slice++) {
+        const sourceY = ((state.lastStep * 71 + slice * 137) % takoTexture.naturalHeight);
+        const sourceHeight = 18 + (slice % 3) * 16;
+        const destY = sourceY / takoTexture.naturalHeight * height;
+        const shift = Math.sin(state.lastStep * 2.7 + slice) * 55 * energy;
+        visual.drawImage(takoTexture, 0, sourceY, takoTexture.naturalWidth, sourceHeight, shift, destY, width, sourceHeight * zoom);
+      }
+    }
+    visual.restore();
+  }
 
   visual.save();
   visual.globalAlpha = .055;
@@ -444,6 +589,39 @@ function drawVisuals(now: number) {
         const radius = 22 + arc * 15 + age * 55; visual.globalAlpha = life * (1 - arc * .035); visual.beginPath();
         visual.arc((arc % 2 ? 1 : -1) * age * 45, arc * 7 - 60, radius, Math.PI * .12, Math.PI * .88); visual.stroke();
       }
+    }
+
+    visual.globalAlpha = life * .82;
+    visual.lineWidth = 1.3;
+    const motif = pattern % 5;
+    if (motif === 0) {
+      for (let cup = 0; cup < 10; cup++) {
+        const a = cup * .58 + age * 1.8; const radius = 35 + cup * 10 + age * 25;
+        const cx = Math.cos(a) * radius; const cy = Math.sin(a) * radius;
+        visual.beginPath(); visual.arc(cx, cy, 5 + cup * .45, 0, Math.PI * 2); visual.stroke();
+        visual.beginPath(); visual.arc(cx, cy, 1.8 + cup * .15, 0, Math.PI * 2); visual.fill();
+      }
+    } else if (motif === 1) {
+      for (let steam = -1; steam <= 1; steam++) {
+        visual.beginPath(); visual.moveTo(steam * 28, 38);
+        visual.bezierCurveTo(steam * 54 + Math.sin(age * 5) * 20, -20, steam * 5 - Math.cos(age * 4) * 28, -75 - age * 25, steam * 30, -145 - age * 42);
+        visual.stroke();
+      }
+    } else if (motif === 2) {
+      for (let ball = 0; ball < 20; ball++) {
+        const col = ball % 5; const row = Math.floor(ball / 5); const bx = (col - 2) * 29; const by = (row - 1.5) * 29;
+        visual.beginPath(); visual.arc(bx, by, 9 + Math.sin(age * 5 + ball) * 2, 0, Math.PI * 2); visual.stroke();
+        visual.beginPath(); visual.moveTo(bx - 6, by + 2); visual.quadraticCurveTo(bx, by - 5, bx + 6, by + 1); visual.stroke();
+      }
+    } else if (motif === 3) {
+      visual.lineWidth = 7 * life + 1;
+      visual.beginPath(); visual.moveTo(-170 - age * 20, 80);
+      visual.bezierCurveTo(-80, -130 - age * 30, 65, 145 + age * 25, 190 + age * 38, -70); visual.stroke();
+      visual.lineWidth = 1;
+      for (let cup = 0; cup < 12; cup++) { const t = cup / 11; const cx = -145 + t * 300; const cy = Math.sin(t * Math.PI * 3 + age) * 50; visual.beginPath(); visual.arc(cx, cy, 4 + cup * .18, 0, Math.PI * 2); visual.stroke(); }
+    } else {
+      const eyeGap = 28 + age * 10;
+      [-1, 1].forEach((side) => { visual.beginPath(); visual.ellipse(side * eyeGap, 0, 18 + age * 5, 27 + age * 8, side * .12, 0, Math.PI * 2); visual.stroke(); visual.beginPath(); visual.arc(side * eyeGap + Math.sin(age * 6) * 5, 3, 5, 0, Math.PI * 2); visual.fill(); });
     }
     visual.restore();
   });
